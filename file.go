@@ -1,4 +1,4 @@
-package alittlestore
+package als
 
 import (
 	"os"
@@ -18,7 +18,7 @@ func NewAFile(filePath string) (*AFile, error) {
 
 func (db *AFile) Read(offset uint32, length uint32) ([]byte, error) {
 	/*
-	**name   ks  :   key    : vs :  value
+	**name   ks  :   Key    : vs :  value
 	**size:  1   :  (<=2^8) : 1  :  (<=2^8)
 	 */
 

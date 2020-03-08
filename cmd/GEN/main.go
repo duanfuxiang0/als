@@ -1,7 +1,7 @@
 package main
 
 import (
-	"alittlestore"
+	"als"
 	"bufio"
 	"fmt"
 	"log"
@@ -23,7 +23,7 @@ func main() {
 
 	n := 1024
 	for n > 0 {
-		key := alittlestore.RandStringRunes(r)
+		key := als.RandStringRunes(r)
 		if err := bw.WriteByte(byte(len(key))); err != nil {
 			fmt.Printf("err: %v", err)
 		}
@@ -31,7 +31,7 @@ func main() {
 			fmt.Printf("err: %v", err)
 		}
 
-		val := alittlestore.RandStringRunes(r)
+		val := als.RandStringRunes(r)
 		if err := bw.WriteByte(byte(len(val))); err != nil {
 			fmt.Printf("err: %v", err)
 		}

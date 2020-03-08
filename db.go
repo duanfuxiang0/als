@@ -1,7 +1,7 @@
-package alittlestore
+package als
 
 import (
-	"alittlestore/patricia"
+	"als/patricia"
 	"os"
 )
 

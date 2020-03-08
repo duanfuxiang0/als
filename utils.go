@@ -1,4 +1,4 @@
-package alittlestore
+package als
 
 import "math/rand"
 
