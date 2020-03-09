@@ -2,22 +2,30 @@ package als
 
 import "math/rand"
 
+
+var letterBytes = []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+const DefaultStrLen = 50
+const LettersLen = 52
+
 func RandByte(r *rand.Rand) byte {
-	v := r.Intn(256)
-	for v <= 0 {
-		v = r.Intn(256)
+	v := r.Intn(DefaultStrLen)
+	for v == 0 {
+		v = r.Intn(DefaultStrLen)
 	}
 	return byte(v)
 }
 
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-
-func RandStringRunes(r *rand.Rand) string {
-	n := r.Intn(256)
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+func RandBytes(r *rand.Rand, max int) (int, []byte) {
+	if max > 256 || max <= 0 {
+		max = DefaultStrLen
 	}
-	return string(b)
+	n := r.Intn(max)
+	for n == 0 {
+		n = r.Intn(max)
+	}
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(LettersLen)]
+	}
+	return n, b
 }

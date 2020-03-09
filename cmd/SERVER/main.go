@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"syscall"
 )
 
 func main() {
@@ -13,12 +14,14 @@ func main() {
 		os.Exit(1)
 	}
 	store := als.MakeServer(os.Args[1])
-
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, os.Interrupt)
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGINT, syscall.SIGKILL, syscall.SIGTERM)
 	for {
 		select {
-		case <-sigs:
+		case <-c:
+			als.Clear(store)
+			fmt.Printf("als exit...")
+			return
 		case <-store.Quit:
 			als.Clear(store)
 			fmt.Printf("als exit...")

@@ -8,14 +8,13 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 3 {
-		fmt.Fprintf(os.Stderr, "Usage: miss db port or the key...\n")
+	if len(os.Args) < 2 {
+		fmt.Fprintf(os.Stderr, "Usage: miss the key...\n")
 		os.Exit(1)
 	}
-	db := os.Args[1]
-	key := os.Args[2]
+	key := os.Args[1]
 
-	c, err := rpc.DialHTTP("tcp", db)
+	c, err := rpc.DialHTTP("tcp", "127.0.0.1:9527")
 	arg := als.GetArgs{Key:[]byte(key)}
 	reply := als.GetReply{}
 	err = c.Call("ALS.GetKey", &arg, &reply)
