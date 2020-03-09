@@ -1,12 +1,12 @@
 package als
 
 import (
-	"als/patricia"
-	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"time"
+
+	"als/patricia"
 )
 
 type DB struct {
@@ -31,14 +31,9 @@ func (db *DB) Init(file string) error {
 
 func genTrie(file *os.File) (*patricia.Trie, error) {
 	tr := &patricia.Trie{}
-	currPos, _:= file.Seek(0, 1)
-	fmt.Println(currPos)
-	rBuf := bufio.NewReaderSize(file, 1)
 	for {
-		//t1 := time.Now()
-		key, vPos, err := readKey(rBuf, currPos)
-		currPos1, _:= file.Seek(0, 4)
-		fmt.Println(currPos1)
+		// t1 := time.Now()
+		key, vPos, err := readKey(file)
 		//fmt.Printf("read key time: %v\n", time.Now().Sub(t1))
 		if err != nil {
 			return nil, err
@@ -53,33 +48,32 @@ func genTrie(file *os.File) (*patricia.Trie, error) {
 	return tr, nil
 }
 
-func readKey(rf  *bufio.Reader, currPos int64) ([]byte, uint64, error) {
+func readKey(file *os.File) ([]byte, uint64, error) {
 	ks := make([]byte, 1)
-	if ret, err := rf.Read(ks); ret < 0 {
+	if ret, err := file.Read(ks); ret < 0 {
 		return nil, 0, err
 	} else if ret == 0 || ks[0] == 0 {
 		return nil, 0, nil
 	}
 	key := make([]byte, ks[0])
-	if ret, err := rf.Read(key); ret < 0 {
+	if ret, err := file.Read(key); ret < 0 {
 		return nil, 0, err
 	} else if ret == 0 {
 		return nil, 0, nil
 	}
 	key = bytes.TrimSpace(key)
 	vs := make([]byte, 1)
-	if ret, err := rf.Read(vs); ret < 0 {
+	if ret, err := file.Read(vs); ret < 0 {
 		return nil, 0, err
 	} else if ret == 0 || vs[0] == 0 {
 		return nil, 0, nil
 	}
-	discard, err := rf.Discard(int(vs[0]))
+	offset, err := file.Seek(int64(vs[0]), 1)
 	if err != nil {
-		fmt.Printf("less: %d\n", int(vs[0]) - discard)
-		fmt.Printf("buf size: %d, size: %d, curr: %d\n", rf.Buffered(), rf.Size(), currPos)
+		return nil, 0, err
 	}
 	vSize := uint64(vs[0])
-	vOff := uint64(currPos) + uint64(ks[0]) + 2
+	vOff := uint64(offset) - vSize
 	vPos := (vOff << 32) | vSize
 
 	return key, vPos, nil
